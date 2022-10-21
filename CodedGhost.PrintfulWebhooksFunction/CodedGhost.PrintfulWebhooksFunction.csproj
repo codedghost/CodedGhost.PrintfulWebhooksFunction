@@ -7,9 +7,12 @@
     <Nullable>enable</Nullable>    
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="CodedChatbot.ServiceBusContract" Version="1.0.996" />
+    <PackageReference Include="CodedGhost.AzureServiceBus" Version="1.0.995" />
     <PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.Http" Version="3.0.12" />
     <PackageReference Include="Microsoft.Azure.Functions.Worker.Sdk" Version="1.3.0" OutputItemType="Analyzer" />
     <PackageReference Include="Microsoft.Azure.Functions.Worker" Version="1.6.0" />
+    <PackageReference Include="PrintfulLib" Version="1.0.830" />
   </ItemGroup>
   <ItemGroup>
     <None Update="host.json">
