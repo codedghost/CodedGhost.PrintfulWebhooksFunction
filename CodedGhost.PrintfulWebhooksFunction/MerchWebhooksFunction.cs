@@ -17,20 +17,18 @@ namespace CodedGhost.PrintfulWebhooksFunction
         }
 
         [Function("MerchWebhooksFunction")]
-        public async Task<HttpResponseData> Run([HttpTrigger(AuthorizationLevel.Function, "get", "post")] HttpRequestData req)
+        [ServiceBusOutput("merch-webhook-queue", ServiceBusEntityType.Queue, Connection = "ServiceBusConnectionString")]
+        public async Task<string> Run([HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequestData req)
         {
-            _logger.LogInformation("C# HTTP trigger function processed a request.");
-
             var webhookContent = await req.Body.DeserializeFromStream<PrintfulWebhookResponse>();
 
-            _logger.LogInformation(JsonConvert.SerializeObject(webhookContent));
+            if (webhookContent == null)
+            {
+                _logger.LogError("Received an empty payload");
+                throw new Exception("Received an empty payload");
+            }
 
-            var response = req.CreateResponse(HttpStatusCode.OK);
-            response.Headers.Add("Content-Type", "text/plain; charset=utf-8");
-
-            response.WriteString("Welcome to Azure Functions!");
-
-            return response;
+            return JsonConvert.SerializeObject(webhookContent);
         }
     }
 }
