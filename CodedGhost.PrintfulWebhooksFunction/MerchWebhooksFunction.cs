@@ -7,17 +7,17 @@ using PrintfulLib.Models.WebhookResponses;
 
 namespace CodedGhost.PrintfulWebhooksFunction
 {
-    public class PrintfulWebhooksFunction
+    public class MerchWebhooksFunction
     {
         private readonly ILogger _logger;
 
-        public PrintfulWebhooksFunction(ILoggerFactory loggerFactory)
+        public MerchWebhooksFunction(ILoggerFactory loggerFactory)
         {
-            _logger = loggerFactory.CreateLogger<PrintfulWebhooksFunction>();
+            _logger = loggerFactory.CreateLogger<MerchWebhooksFunction>();
         }
 
-        [Function("PrintfulWebhooksFunction")]
-        public async Task<HttpResponseData> Run([HttpTrigger(AuthorizationLevel.Function, "post")] HttpRequestData req)
+        [Function("MerchWebhooksFunction")]
+        public async Task<HttpResponseData> Run([HttpTrigger(AuthorizationLevel.Function, "get", "post")] HttpRequestData req)
         {
             _logger.LogInformation("C# HTTP trigger function processed a request.");
 

@@ -8,8 +8,5 @@
       }
     }
   },
-  "functions": [ "PrintfulWebhooksFunction" ],
-  "extensions": {
-    "serviceBus": {}
-  }
+  "functions": [ "MerchWebhooksFunction" ]
 }
