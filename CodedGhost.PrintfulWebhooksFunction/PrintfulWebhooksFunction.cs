@@ -1,6 +1,4 @@
-using System.Collections.Generic;
 using System.Net;
-using System.Runtime.Serialization.Formatters.Binary;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
