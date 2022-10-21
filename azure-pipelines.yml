@@ -1,0 +1,79 @@
+# .NET Core Function App to Windows on Azure
+# Build a .NET Core function app and deploy it to Azure as a Windows function App.
+# Add steps that analyze code, save build artifacts, deploy, and more:
+# https://docs.microsoft.com/en-us/azure/devops/pipelines/languages/dotnet-core
+
+trigger:
+- master
+
+variables:
+  # Azure Resource Manager connection created during pipeline creation
+  azureSubscription: '383e8db1-6c82-408f-97fe-25c7be27116d'
+
+  # Function app name
+  functionAppName: 'ChartDownloaderFunction'
+
+  # Working Directory
+  workingDirectory: '$(System.DefaultWorkingDirectory)/CodedGhost.PrintfulWebhooksFunction'
+
+stages:
+- stage: Build
+  displayName: Build stage
+
+  jobs:
+  - job: Build
+    displayName: Build
+
+    steps:
+    - task: DotNetCoreCLI@2
+      inputs:
+        command: 'restore'
+        projects: '**/*.csproj'
+        feedsToUse: 'select'
+        vstsFeed: '087f7b3b-2160-4d35-8fb9-36edb3d5651b'
+    - task: DotNetCoreCLI@2
+      displayName: Build
+      inputs:
+        command: 'build'
+        projects: |
+          $(workingDirectory)/*.csproj
+        arguments: --output $(System.DefaultWorkingDirectory)/publish_output --configuration Release
+
+    - task: ArchiveFiles@2
+      displayName: 'Archive files'
+      inputs:
+        rootFolderOrFile: '$(System.DefaultWorkingDirectory)/publish_output'
+        includeRootFolder: false
+        archiveType: zip
+        archiveFile: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
+        replaceExistingArchive: true
+
+    - task: PublishBuildArtifacts@1
+
+- stage: Deploy
+  displayName: Deploy stage
+  dependsOn: Build
+  condition: succeeded()
+
+  jobs:
+  - deployment: Deploy
+    displayName: Deploy
+    environment: 'development'
+
+    strategy:
+      runOnce:
+        deploy:
+
+          steps:
+          - task: DownloadBuildArtifacts@1
+            inputs:
+              buildType: 'current'
+              downloadType: 'single'
+              downloadPath: '$(System.ArtifactsDirectory)'
+          - task: AzureFunctionApp@1
+            inputs:
+              azureSubscription: 'Azure subscription 1 (aa675b61-4110-4004-a2fe-535e1b310bc9)'
+              appType: 'functionApp'
+              appName: 'PrintfulWebhooksFunction'
+              package: '$(Build.ArtifactStagingDirectory)/**/*.zip'
+              deploymentMethod: 'auto'
